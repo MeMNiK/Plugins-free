@@ -4,7 +4,7 @@ main: dev.foolio.bridge.FoolioBridgePlugin
 api-version: '1.20'
 description: Free open-source bridge between your donate website and your Minecraft server
 authors: [DeJIoVoy]
-website: https://github.com/MeMNiK/FoolioBridge
+website: https://github.com/MeMNiK/Plugins-free/tree/main/FoolioBridge
 commands:
   donate:
     description: Donate link and your purchase history
