@@ -1,0 +1,10 @@
+{
+  "name": "foolio-bridge",
+  "version": "1.0.0",
+  "description": "Site side of FoolioBridge: deliver donate purchases to a Minecraft server",
+  "main": "index.js",
+  "files": ["index.js", "examples"],
+  "engines": { "node": ">=16" },
+  "keywords": ["minecraft", "donate", "paper", "spigot", "bridge"],
+  "license": "MIT"
+}

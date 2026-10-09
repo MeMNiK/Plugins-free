@@ -1,0 +1,30 @@
+name: Build plugins
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10'
+      - name: Build every plugin version folder
+        run: |
+          mkdir -p out
+          for dir in $(find . -path ./out -prune -o -name build.gradle.kts -path '*/plugin/*' -print | xargs -n1 dirname); do
+            echo "::group::$dir"
+            (cd "$dir" && gradle build --no-daemon) || exit 1
+            cp "$dir"/build/libs/*.jar out/
+            echo "::endgroup::"
+          done
+          ls -la out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: plugins
+          path: out/*.jar
