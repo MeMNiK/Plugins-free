@@ -1,3 +1,5 @@
+<img src="../assets/FoolioBridge-icon-128.png" width="128" alt="FoolioBridge icon">
+
 # FoolioBridge
 
 **Development by DeJIoVoy**

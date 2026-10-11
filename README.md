@@ -4,5 +4,5 @@
 
 | Плагин | Что делает | Последняя версия |
 |---|---|---|
-| [FoolioBridge](FoolioBridge) | Мост между донат-сайтом и сервером: выдача покупок, офлайн-очередь, подписи HMAC | [1.0.1](FoolioBridge/FoolioBridge-1.0.1) |
+| <img src="FoolioBridge/assets/FoolioBridge-icon-32.png" width="32"> [FoolioBridge](FoolioBridge) | Мост между донат-сайтом и сервером: выдача покупок, офлайн-очередь, подписи HMAC | [1.0.1](FoolioBridge/FoolioBridge-1.0.1) |
 
