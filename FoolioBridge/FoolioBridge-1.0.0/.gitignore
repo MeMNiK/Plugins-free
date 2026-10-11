@@ -1,5 +1,0 @@
-build/
-.gradle/
-*.class
-node_modules/
-foolio-orders.json
