@@ -77,7 +77,7 @@ public final class PlayerTitlesMenu extends PagedMenu {
                 }
                 if (lock()) {
                     plugin.service().revoke(viewer, t.id(), reason,
-                            () -> open(plugin, viewer, target, currentPage()));
+                            ifStillHere(() -> open(plugin, viewer, target, currentPage())));
                 }
             });
         });

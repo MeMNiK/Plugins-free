@@ -73,7 +73,7 @@ public final class ReviewMenu extends PagedMenu {
             set(slot, tpl.build(r, null, t.owner()), type -> {
                 if (type == ClickType.LEFT || type == ClickType.SHIFT_LEFT) {
                     if (lock()) {
-                        plugin.service().approve(viewer, t.id(), () -> plugin.service().loadQueue(this::update, viewer));
+                        plugin.service().approve(viewer, t.id(), ifStillHere(() -> plugin.service().loadQueue(this::update, viewer)));
                     }
                 } else if (type == ClickType.RIGHT || type == ClickType.SHIFT_RIGHT) {
                     click();

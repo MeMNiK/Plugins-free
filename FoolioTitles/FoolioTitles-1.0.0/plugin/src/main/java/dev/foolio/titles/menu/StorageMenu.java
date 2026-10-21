@@ -66,7 +66,7 @@ public final class StorageMenu extends PagedMenu {
                 MenuConfig.ItemTemplate tpl = cfg().item(id, "pending-title");
                 set(slot, tpl.build(r), type -> {
                     if ((type == ClickType.RIGHT || type == ClickType.SHIFT_RIGHT) && lock()) {
-                        plugin.service().cancel(viewer, t.id(), this::reopen);
+                        plugin.service().cancel(viewer, t.id(), ifStillHere(this::reopen));
                     }
                 });
                 return;
@@ -82,16 +82,16 @@ public final class StorageMenu extends PagedMenu {
                         click();
                         rerender();
                     } else if (lock()) {
-                        plugin.service().deleteOwn(viewer, t.id(), this::reopen);
+                        plugin.service().deleteOwn(viewer, t.id(), ifStillHere(this::reopen));
                     }
                 } else if (type == ClickType.LEFT || type == ClickType.SHIFT_LEFT) {
                     if (!lock()) {
                         return;
                     }
                     if (active) {
-                        plugin.service().unequip(viewer, this::reopen);
+                        plugin.service().unequip(viewer, ifStillHere(this::reopen));
                     } else {
-                        plugin.service().equip(viewer, t.id(), this::reopen);
+                        plugin.service().equip(viewer, t.id(), ifStillHere(this::reopen));
                     }
                 }
             });

@@ -66,7 +66,7 @@ public final class CreateMenu extends Menu {
                     return;
                 }
                 close();
-                plugin.service().submit(viewer, draft, () -> StorageMenu.open(plugin, viewer, 0));
+                plugin.service().submit(viewer, draft, ifStillHere(() -> StorageMenu.open(plugin, viewer, 0)));
             });
             place("retry", r, type -> startInput());
         }

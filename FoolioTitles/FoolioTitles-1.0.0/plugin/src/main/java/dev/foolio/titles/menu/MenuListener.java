@@ -37,6 +37,11 @@ public final class MenuListener implements Listener {
         open.put(uuid, menu);
     }
 
+    /** Меню плагина, открытое у игрока сейчас (null — никакое). */
+    Menu current(UUID uuid) {
+        return open.get(uuid);
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void onClickLowest(InventoryClickEvent event) {
         // отменяем как можно раньше, чтобы ни один плагин не успел «вытащить» предмет из меню

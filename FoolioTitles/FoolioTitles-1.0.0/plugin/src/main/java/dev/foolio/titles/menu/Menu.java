@@ -31,6 +31,8 @@ public abstract class Menu implements InventoryHolder {
     private Inventory inventory;
     /** Меню «заблокировано», пока выполняется действие (защита от двойных кликов). */
     private boolean locked;
+    /** Меню закрыто самим плагином (например, для ввода в чат) — тогда его можно открыть снова. */
+    private boolean closedByPlugin;
 
     protected Menu(FoolioTitles plugin, Player viewer, String id) {
         this.plugin = plugin;
@@ -141,7 +143,22 @@ public abstract class Menu implements InventoryHolder {
     }
 
     protected void close() {
+        closedByPlugin = true;
         viewer.closeInventory();
+    }
+
+    /**
+     * Обёртка для действий после асинхронной операции: выполняется, только если игрок
+     * всё ещё смотрит это меню (или меню закрыл сам плагин). Иначе игрок уже ушёл
+     * в другое меню или закрыл инвентарь — не выдёргиваем его обратно.
+     */
+    protected Runnable ifStillHere(Runnable action) {
+        return () -> {
+            Menu current = plugin.menuListener().current(viewer.getUniqueId());
+            if (viewer.isOnline() && (current == this || (current == null && closedByPlugin))) {
+                action.run();
+            }
+        };
     }
 
     public Player viewer() {

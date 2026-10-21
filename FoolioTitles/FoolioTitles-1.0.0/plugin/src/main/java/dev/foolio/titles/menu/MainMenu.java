@@ -63,7 +63,7 @@ public final class MainMenu extends Menu {
         if (active != null) {
             place("unequip", r, type -> {
                 if (lock()) {
-                    plugin.service().unequip(viewer, () -> open(plugin, viewer));
+                    plugin.service().unequip(viewer, ifStillHere(() -> open(plugin, viewer)));
                 }
             });
         }
