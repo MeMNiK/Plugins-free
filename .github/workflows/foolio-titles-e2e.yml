@@ -30,17 +30,25 @@ jobs:
         run: cd ci/foolio-titles-e2e && ./run.sh ${{ matrix.mc }} "$GITHUB_WORKSPACE/FoolioTitles/FoolioTitles-1.0.0/plugin/build/libs/FoolioTitles-1.0.0.jar" 2>&1 | tee e2e-output.txt; exit ${PIPESTATUS[0]}
       - name: Publish results to branch
         if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           cd ci/foolio-titles-e2e
-          mkdir -p out && V=${{ matrix.mc }}
-          cp e2e-output.txt out/output-$V.txt 2>/dev/null || true
-          cp results-$V.json out/ 2>/dev/null || true
-          if [ -f server/server.log ]; then sed 's/\x1b\[[0-9;]*m//g' server/server.log | tail -400 > out/server-$V.log; fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f out
-          git commit -m "E2E results $V [skip ci]" || exit 0
-          for i in 1 2 3 4 5; do git pull --rebase -q origin e2e/foolio-titles && git push -q origin HEAD:e2e/foolio-titles && break; sleep 5; done
+          V=${{ matrix.mc }}
+          if [ -f server/server.log ]; then sed 's/\x1b\[[0-9;]*m//g' server/server.log | tail -500 > server-$V.log; fi
+          grep -E "ИТОГО" e2e-output.txt | sed 's/^/::notice::/' || true
+          for f in e2e-output.txt results-$V.json server-$V.log; do
+            [ -f "$f" ] || continue
+            name="$f"; [ "$f" = e2e-output.txt ] && name="output-$V.txt"
+            path="ci/foolio-titles-e2e/out/$name"
+            sha=$(gh api "repos/${{ github.repository }}/contents/$path?ref=e2e/foolio-titles" -q .sha 2>/dev/null || true)
+            for i in 1 2 3 4 5; do
+              if gh api -X PUT "repos/${{ github.repository }}/contents/$path" \
+                  -f message="E2E $V: $name [skip ci]" -f branch=e2e/foolio-titles \
+                  -f content="$(base64 -w0 "$f")" ${sha:+-f sha=$sha} >/dev/null; then echo "uploaded $path"; break; fi
+              sleep $((i*3)); sha=$(gh api "repos/${{ github.repository }}/contents/$path?ref=e2e/foolio-titles" -q .sha 2>/dev/null || true)
+            done
+          done
       - if: always()
         uses: actions/upload-artifact@v4
         with:
