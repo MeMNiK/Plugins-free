@@ -24,10 +24,14 @@ public final class MenuConfig {
 
     private static final MiniMessage MM = MiniMessage.miniMessage();
 
+    /** Показывать скины игроков на головах в меню (на пиратских серверах лучше выключить). */
+    static boolean playerHeads = true;
+
     private YamlConfiguration yaml = new YamlConfiguration();
     private Logger logger;
 
-    public void load(YamlConfiguration yaml, Logger logger) {
+    public void load(YamlConfiguration yaml, Logger logger, boolean heads) {
+        playerHeads = heads;
         this.yaml = yaml;
         this.logger = logger;
     }
@@ -149,7 +153,7 @@ public final class MenuConfig {
                 meta.setCustomModelData(modelData);
             }
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_ENCHANTS);
-            if (headOwner != null && meta instanceof SkullMeta skull) {
+            if (headOwner != null && playerHeads && meta instanceof SkullMeta skull) {
                 skull.setOwningPlayer(Bukkit.getOfflinePlayer(headOwner));
             }
             item.setItemMeta(meta);

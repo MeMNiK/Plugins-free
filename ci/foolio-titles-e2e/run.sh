@@ -19,7 +19,7 @@ cp "$JAR" plugins/FoolioTitles.jar
 
 # --- конфиг плагина для тестов: короткий кулдаун
 mkdir -p plugins/FoolioTitles
-sed 's/submit-cooldown-seconds: 30/submit-cooldown-seconds: 3/' "$HERE/../../FoolioTitles/FoolioTitles-1.0.0/plugin/src/main/resources/config.yml" > plugins/FoolioTitles/config.yml
+sed -e 's/submit-cooldown-seconds: 30/submit-cooldown-seconds: 3/' -e 's/^player-heads: true/player-heads: false/' "$HERE/../../FoolioTitles/FoolioTitles-1.0.0/plugin/src/main/resources/config.yml" > plugins/FoolioTitles/config.yml
 
 echo "eula=true" > eula.txt
 cat > server.properties <<P
