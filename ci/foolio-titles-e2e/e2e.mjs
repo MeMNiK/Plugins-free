@@ -248,7 +248,7 @@ async function main() {
   check('ПКМ открывает выбор причины', !!w);
   await click(A, 10, 0, 0);
   check('Отказ №1: игрок узнаёт причину, токен возвращён', await waitMsg(T, /отклонён.*Мат или оскорбления.*Токен возвращён/, tm));
-  check('Баланс после отказа №1 = 2', (await tokens('Tester')) === 2);
+  check('Баланс после отказа №1 = 3 (токен вернулся)', (await tokens('Tester')) === 3);
   w = await waitWindow(A, (x) => isReview(x) && slotName(x, 10) !== 'player_head');
   check('Очередь у админа обновилась', !!w);
 
@@ -269,7 +269,7 @@ async function main() {
   A.chat('Своя причина теста');
   check('Отказ №2: токен не возвращается', await waitMsg(T, /отклонён.*Своя причина теста.*не возвращается/, tm));
   check('Причину отказа, введённую в чат, не видят игроки', !W.msgs.slice(wm2).some((m) => /Своя причина теста/.test(m) && !/отклонён/.test(m)));
-  check('Баланс после отказа №2 = 1', (await tokens('Tester')) === 1);
+  check('Баланс после отказа №2 = 2 (токен не вернулся)', (await tokens('Tester')) === 2);
 
   // 11. Одобрение и надевание
   await sleep(3500);
@@ -281,7 +281,7 @@ async function main() {
   tm = mark(T);
   await click(A, 10, 0, 0);
   check('Одобрение: игрок получил уведомление', await waitMsg(T, /одобрен/, tm));
-  check('Баланс после одобрения = 0', (await tokens('Tester')) === 0);
+  check('Баланс после одобрения = 1', (await tokens('Tester')) === 1);
   await closeWin(A);
 
   w = await openMain(T);
@@ -297,6 +297,7 @@ async function main() {
   check('LuckPerms: суффикс с приоритетом 500 поставлен', LP_SUFFIX.test(out), (out.match(/.*500 - .*/) || [out.slice(-200)])[0].slice(0, 200));
 
   // 12. Без токенов создать нельзя
+  await consoleCmd('titles token set Tester 0', /установлен/);
   w = await openMain(T);
   await click(T, 11);
   w = await waitWindow(T, isCreateInput);
