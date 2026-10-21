@@ -1,0 +1,22 @@
+name: FoolioTitles
+version: '${version}'
+main: dev.foolio.titles.FoolioTitles
+api-version: '1.20'
+description: Личные титулы игроков за токены с проверкой администрацией (суффикс LuckPerms).
+authors: [MeMNiK]
+website: https://github.com/MeMNiK/Plugins-free
+depend: [LuckPerms]
+
+commands:
+  titles:
+    description: Меню личных титулов
+    usage: /<command> [help|admin|token|strikes|reload]
+    aliases: [ftitles, tituly]
+
+permissions:
+  foolio.titles.use:
+    description: Открывать меню, создавать и носить свои титулы
+    default: true
+  foolio.titles.admin:
+    description: Проверка титулов, токены, страйки, перезагрузка
+    default: op

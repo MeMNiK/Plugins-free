@@ -1,0 +1,197 @@
+# =====================================================================
+#  FoolioTitles — личные титулы за токены
+#  Все тексты — формат MiniMessage: https://docs.advntr.dev/minimessage/format
+#  Меню настраиваются в menus.yml
+#  Перезагрузка: /titles reload
+# =====================================================================
+
+# ---------------------------------------------------------------------
+#  Титул, который вводит игрок
+# ---------------------------------------------------------------------
+title:
+  # Длина в ВИДИМЫХ символах (цветовые коды и теги не считаются)
+  min-length: 2
+  max-length: 16
+  # Максимальная длина вместе с кодами/тегами (защита от огромных градиентов)
+  max-raw-length: 256
+  # Разрешить «мигающий» текст (&k / <obfuscated>)
+  allow-obfuscated: false
+  # Какие символы разрешены в видимом тексте титула (регулярное выражение).
+  # Пусто = любые символы. По умолчанию: буквы, цифры, пробел и набор значков.
+  allowed-chars: '^[\p{L}\p{N} \-_.,!?:;''"()\[\]*+=/|#@$%^~★☆✦✧✪✯❖❤♥♡♦♣♠✿❀☀☼☾☽⚡⚔☠♛♚♕♔✔✘⚑☯∞]+$'
+  # Запрещённые слова: титул с ними не примет даже на проверку (токен не тратится).
+  # Сравнение без учёта регистра, пробелов, знаков и похожих латинских букв (a=а, o=о, 0=о ...).
+  forbidden-words:
+    - админ
+    - модер
+    - хелпер
+    - owner
+    - admin
+
+# ---------------------------------------------------------------------
+#  Лимиты
+# ---------------------------------------------------------------------
+limits:
+  # Слотов в хранилище по умолчанию (считаются одобренные титулы + заявки на проверке).
+  # Больше слотов — правом foolio.titles.slots.<число>, например foolio.titles.slots.10
+  default-slots: 5
+  # Сколько заявок игрок может держать на проверке одновременно (0 = без ограничения)
+  max-pending: 1
+
+# ---------------------------------------------------------------------
+#  Отказы
+# ---------------------------------------------------------------------
+rejections:
+  # Сколько отказов игроку прощается с возвратом токена.
+  # 1 = за первый отказ токен вернётся, за второй и следующие — нет.
+  free-rejections: 1
+  # Сбрасывать счётчик отказов, когда титул игрока одобрен
+  reset-strikes-on-approve: false
+  # Готовые причины отказа в меню (можно также ввести свою в чат)
+  reasons:
+    - "Мат или оскорбления"
+    - "Выдаёт себя за администрацию"
+    - "Реклама"
+    - "Политика / запрещённая тематика"
+    - "Нечитаемое оформление"
+  # Причина, когда администрация снимает уже одобренный титул
+  revoke-reason: "Нарушение правил"
+
+# ---------------------------------------------------------------------
+#  LuckPerms
+# ---------------------------------------------------------------------
+luckperms:
+  # Приоритет суффикса. Чем выше — тем важнее (LuckPerms показывает суффикс с наибольшим приоритетом).
+  # ВАЖНО: суффиксы с этим приоритетом принадлежат плагину — он их заменяет и удаляет сам.
+  priority: 500
+  # Как титул записывается в суффикс. <title> — сам титул.
+  # Примеры: " <title>"   или   " <dark_gray>[</dark_gray><title><dark_gray>]</dark_gray>"
+  suffix-template: " <title>"
+  # Формат строки суффикса для чат-плагинов:
+  #   LEGACY      — &x&f&f&0&0&0&0 (понимают почти все плагины: CMI, TAB, EssentialsChat...)
+  #   LEGACY_HASH — &#ff0000
+  #   MINIMESSAGE — теги MiniMessage как есть (если чат-плагин их понимает)
+  suffix-format: LEGACY
+  # Добавлять сброс цвета в конец, чтобы цвет титула не «перетекал» в текст после него
+  append-reset: true
+  # Ставить суффикс только на одном сервере (контекст server). Пусто = на всех.
+  server-context: ""
+
+# ---------------------------------------------------------------------
+#  Ввод в чат
+# ---------------------------------------------------------------------
+input:
+  # Сколько секунд ждать ввода
+  timeout-seconds: 60
+  # Слова для отмены ввода
+  cancel-words: ["отмена", "cancel", "-"]
+
+# ---------------------------------------------------------------------
+#  Уведомления
+# ---------------------------------------------------------------------
+notify:
+  # Сообщать администрации о новых заявках
+  admins-on-new-request: true
+  # При входе показывать администрации, сколько заявок ждёт проверки
+  admins-on-join: true
+
+# ---------------------------------------------------------------------
+#  Звуки (ключи ванильных звуков). Пусто = без звука.
+# ---------------------------------------------------------------------
+sounds:
+  enabled: true
+  click: "minecraft:ui.button.click"
+  success: "minecraft:entity.player.levelup"
+  error: "minecraft:entity.villager.no"
+  notify: "minecraft:block.note_block.pling"
+
+date-format: "dd.MM.yyyy HH:mm"
+
+# ---------------------------------------------------------------------
+#  Сообщения. Пустая строка "" — сообщение не отправляется.
+#  <prefix> — префикс ниже.
+# ---------------------------------------------------------------------
+messages:
+  prefix: "<gradient:#ff9a3c:#ff4e7a><bold>Титулы</bold></gradient> <dark_gray>»</dark_gray> "
+
+  help:
+    player:
+      - "<prefix><gray>/titles</gray> <white>— меню личных титулов"
+    admin:
+      - "<gradient:#ff9a3c:#ff4e7a><bold>FoolioTitles</bold></gradient> <gray>— команды:"
+      - " <gray>/titles</gray> <white>— меню титулов"
+      - " <gray>/titles admin</gray> <white>— проверка заявок"
+      - " <gray>/titles admin player <ник></gray> <white>— титулы игрока"
+      - " <gray>/titles token give|take|set <ник> <кол-во></gray> <white>— токены"
+      - " <gray>/titles token check <ник></gray> <white>— баланс токенов"
+      - " <gray>/titles strikes check|reset <ник></gray> <white>— отказы игрока"
+      - " <gray>/titles reload</gray> <white>— перезагрузка"
+
+  menu:
+    no-active-title: "<gray>не надет</gray>"
+    refund-yes: "<green>вернётся</green>"
+    refund-no: "<red>не вернётся</red>"
+
+  input:
+    prompt:
+      - ""
+      - "<prefix><white>Напиши титул в чат — <yellow>его увидишь только ты</yellow>."
+      - " <gray>Длина: <white><min>–<max></white> символов. Цвета: <white>&a</white>, <white>&#ff8800</white>, <gradient:#ff4e50:#f9d423>градиенты</gradient> <white>\\<gradient:#ff4e50:#f9d423>Текст\\</gradient></white>"
+      - " <gray>Отмена — <white>отмена</white>. Время: <white><seconds> сек.</white>"
+      - ""
+    reason-prompt: "<prefix><white>Напиши причину отказа в чат.</white> <gray>Отмена — <white>отмена</white>, время: <seconds> сек."
+    timeout: "<prefix><red>Время ввода вышло."
+    cancelled: "<prefix><gray>Ввод отменён."
+    error:
+      empty: "<prefix><red>Титул не может быть пустым."
+      raw-too-long: "<prefix><red>Слишком много кодов оформления — упрости титул."
+      obfuscated: "<prefix><red>Мигающий текст (&k) в титулах запрещён."
+      unknown-tags: "<prefix><red>В титуле есть неизвестные теги или символы < >. Можно: цвета, HEX, градиенты, радуга, жирный/курсив/подчёркнутый/зачёркнутый."
+      too-short: "<prefix><red>Слишком короткий титул — минимум <min> символа."
+      too-long: "<prefix><red>Слишком длинный титул — максимум <max> символов (без учёта цветов)."
+      bad-chars: "<prefix><red>В титуле есть недопустимые символы."
+      forbidden-word: "<prefix><red>Титул содержит запрещённое слово."
+
+  player:
+    submitted: "<prefix><green>Титул <white><title></white> отправлен на проверку администрации. <gray>(-1 токен)"
+    no-tokens: "<prefix><red>Нужен токен титула. <gray>Купить его можно на сайте сервера."
+    slots-full: "<prefix><red>Хранилище заполнено (<limit>). Удали ненужный титул в меню «Мои титулы»."
+    too-many-pending: "<prefix><red>У тебя уже есть заявка на проверке — дождись решения или отзови её."
+    cancelled: "<prefix><yellow>Заявка отозвана, токен возвращён."
+    equipped: "<prefix><green>Титул <white><title></white> надет!"
+    unequipped: "<prefix><gray>Титул снят."
+    deleted: "<prefix><gray>Титул <white><title></white> удалён из хранилища."
+    approved: "<prefix><green>Твой титул <white><title></white> одобрен! <gray>Надеть его можно в</gray> <click:run_command:'/titles'><hover:show_text:'Открыть меню'><yellow><u>/titles</u></yellow></hover></click>"
+    rejected-refund: "<prefix><red>Титул <white><title></white> отклонён.</red> <gray>Причина: <white><reason></white>. <yellow>Токен возвращён — в следующий раз за отказ токен уже не вернётся!"
+    rejected-no-refund: "<prefix><red>Титул <white><title></white> отклонён.</red> <gray>Причина: <white><reason></white>. <red>Токен не возвращается."
+    revoked: "<prefix><red>Администрация сняла твой титул <white><title></white>.</red> <gray>Причина: <white><reason></white>."
+
+  admin:
+    new-request: "<prefix><yellow>Новая заявка на титул от <white><player></white>: <title></yellow> <click:run_command:'/titles admin'><hover:show_text:'Открыть проверку'><green>[Проверить]</green></hover></click>"
+    pending-on-join: "<prefix><yellow>Титулов ждут проверки: <white><count></white></yellow> <click:run_command:'/titles admin'><hover:show_text:'Открыть проверку'><green>[Проверить]</green></hover></click>"
+    approved: "<prefix><green>Титул <white><title></white> игрока <white><player></white> одобрен."
+    rejected-refund: "<prefix><yellow>Титул <white><title></white> игрока <white><player></white> отклонён (<reason>). Токен возвращён, отказов: <strikes>."
+    rejected-no-refund: "<prefix><yellow>Титул <white><title></white> игрока <white><player></white> отклонён (<reason>). Токен НЕ возвращён, отказов: <strikes>."
+    revoked: "<prefix><yellow>Титул <white><title></white> игрока <white><player></white> снят."
+    reloaded: "<prefix><green>Конфигурация перезагружена."
+
+  tokens:
+    give: "<prefix><green>Выдано <white><amount></white> ток. игроку <white><player></white>. Баланс: <white><balance></white>."
+    take: "<prefix><yellow>Забрано <white><amount></white> ток. у игрока <white><player></white>. Баланс: <white><balance></white>."
+    set: "<prefix><yellow>Баланс игрока <white><player></white> установлен: <white><balance></white>."
+    check: "<prefix><gray>Токены игрока <white><player></white>: <white><balance></white>."
+    pending: "<prefix><yellow>Игрок <white><player></white> ещё не заходил — <white><amount></white> ток. выдадутся при входе (всего ждёт: <total>)."
+    received: "<prefix><green>Ты получил <white><amount></white> ток. титула!</green> <click:run_command:'/titles'><hover:show_text:'Открыть меню'><yellow><u>Создать титул</u></yellow></hover></click>"
+
+  strikes:
+    check: "<prefix><gray>Отказов у <white><player></white>: <white><strikes></white> (бесплатных: <free>)."
+    reset: "<prefix><green>Отказы игрока <white><player></white> сброшены."
+
+  error:
+    database: "<prefix><red>Ошибка базы данных, сообщи администрации."
+    luckperms: "<prefix><red>Не удалось применить титул через LuckPerms, сообщи администрации."
+    already-processed: "<prefix><red>Эта заявка или титул уже обработаны."
+    no-permission: "<prefix><red>Недостаточно прав."
+    players-only: "<prefix><red>Только для игроков."
+    player-not-found: "<prefix><red>Игрок <white><player></white> не найден."
+    bad-number: "<prefix><red>Неверное число: <white><value></white>."

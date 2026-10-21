@@ -1,0 +1,366 @@
+# =====================================================================
+#  FoolioTitles — настройка меню
+#  title / name / lore — формат MiniMessage. Слоты считаются с 0.
+#  size — 9, 18, 27, 36, 45 или 54.
+#  content-slots — слоты для списков, например "10-16, 19-25, 28-34".
+#  Для любого предмета можно указать custom-model-data: <число> (для ресурспака).
+#  Перезагрузка: /titles reload
+# =====================================================================
+
+# ---------------------------------------------------------------------
+#  Главное меню (/titles)
+#  Плейсхолдеры: <player> <tokens> <slots_used> <slots_max> <active>
+# ---------------------------------------------------------------------
+main:
+  title: "<dark_gray>Личные титулы"
+  size: 27
+  filler:
+    material: BLACK_STAINED_GLASS_PANE
+    name: " "
+  items:
+    info:
+      slot: 4
+      material: BOOK
+      name: "<gradient:#ff9a3c:#ff4e7a><bold>Личные титулы</bold></gradient>"
+      lore:
+        - "<gray>Создай свой уникальный титул,"
+        - "<gray>который будет виден в чате и табе."
+        - ""
+        - "<gray>Токенов: <yellow><tokens></yellow>"
+        - "<gray>Хранилище: <white><slots_used>/<slots_max></white>"
+        - "<gray>Сейчас надет: <active>"
+    create:
+      slot: 11
+      material: ANVIL
+      name: "<green><bold>Создать титул"
+      lore:
+        - "<gray>Придумай текст и оформление,"
+        - "<gray>администрация проверит титул."
+        - ""
+        - "<gray>Стоимость: <yellow>1 токен</yellow>"
+        - "<gray>У тебя: <yellow><tokens></yellow>"
+        - ""
+        - "<yellow>Нажми, чтобы создать"
+    storage:
+      slot: 13
+      material: CHEST
+      name: "<gold><bold>Мои титулы"
+      lore:
+        - "<gray>Все титулы, созданные тобой."
+        - "<gray>Здесь их можно надевать и менять."
+        - ""
+        - "<gray>Слотов занято: <white><slots_used>/<slots_max>"
+        - ""
+        - "<yellow>Нажми, чтобы открыть"
+    unequip:
+      slot: 15
+      material: BARRIER
+      name: "<red><bold>Снять титул"
+      lore:
+        - "<gray>Сейчас надет: <active>"
+        - ""
+        - "<yellow>Нажми, чтобы снять"
+    admin:
+      slot: 22
+      material: COMPARATOR
+      name: "<light_purple><bold>Проверка титулов"
+      lore:
+        - "<gray>Заявки игроков на титулы."
+        - ""
+        - "<yellow>Нажми, чтобы открыть"
+    close:
+      slot: 26
+      material: DARK_OAK_DOOR
+      name: "<red>Закрыть"
+
+# ---------------------------------------------------------------------
+#  Создание титула
+#  Плейсхолдеры: <player> <tokens> <min> <max>
+#  После ввода ещё: <title> (сам титул) <suffix> (как в суффиксе) <length>
+# ---------------------------------------------------------------------
+create:
+  title: "<dark_gray>Создание титула"
+  size: 27
+  filler:
+    material: BLACK_STAINED_GLASS_PANE
+    name: " "
+  items:
+    info:
+      slot: 4
+      material: SUNFLOWER
+      name: "<yellow><bold>Токены: <tokens>"
+      lore:
+        - "<gray>1 токен = 1 заявка на титул."
+        - "<gray>Токены покупаются на сайте сервера."
+    input:
+      slot: 13
+      material: WRITABLE_BOOK
+      name: "<green><bold>Ввести титул"
+      lore:
+        - "<gray>Нажми и напиши титул в чат —"
+        - "<gray>другие игроки его не увидят."
+        - ""
+        - "<gray>Длина: <white><min>–<max></white> символов"
+        - "<gray>Можно использовать:"
+        - " <white>&a &l</white> <dark_gray>— обычные цвета и стили"
+        - " <white>&#ff8800</white> <dark_gray>— HEX-цвет"
+        - ' <white>\<gradient:#ff4e50:#f9d423>Текст\</gradient></white>'
+        - "   <dark_gray>— <gradient:#ff4e50:#f9d423>градиент</gradient>"
+        - ' <white>\<rainbow>Текст\</rainbow></white> <dark_gray>— <rainbow>радуга</rainbow>'
+        - ""
+        - "<yellow>Нажми, чтобы ввести"
+    preview:
+      slot: 13
+      material: NAME_TAG
+      name: "<title>"
+      lore:
+        - "<gray>Так титул будет выглядеть в чате:"
+        - " <white><player><suffix> <dark_gray>»</dark_gray> <gray>Всем привет!"
+        - ""
+        - "<gray>Длина: <white><length>/<max>"
+        - ""
+        - "<yellow>Нажми, чтобы изменить"
+    submit:
+      slot: 15
+      material: LIME_CONCRETE
+      name: "<green><bold>Отправить на проверку"
+      lore:
+        - "<gray>Титул проверит администрация."
+        - "<gray>После одобрения он появится"
+        - "<gray>в хранилище «Мои титулы»."
+        - ""
+        - "<gray>Стоимость: <yellow>1 токен</yellow> <dark_gray>(у тебя <tokens>)"
+        - "<red>За неприличный титул токен"
+        - "<red>возвращается только один раз!"
+        - ""
+        - "<yellow>Нажми, чтобы отправить"
+    retry:
+      slot: 11
+      material: YELLOW_CONCRETE
+      name: "<yellow><bold>Ввести заново"
+      lore:
+        - "<gray>Написать другой вариант."
+    back:
+      slot: 18
+      material: ARROW
+      name: "<gray>Назад"
+
+# ---------------------------------------------------------------------
+#  Хранилище «Мои титулы»
+#  Плейсхолдеры: <player> <tokens> <slots_used> <slots_max> <page> <pages>
+#  У титулов ещё: <title> <id> <date>
+# ---------------------------------------------------------------------
+storage:
+  title: "<dark_gray>Мои титулы (<page>/<pages>)"
+  size: 54
+  content-slots: "10-16, 19-25, 28-34"
+  filler:
+    material: BLACK_STAINED_GLASS_PANE
+    name: " "
+  items:
+    title:
+      material: NAME_TAG
+      name: "<title>"
+      lore:
+        - "<gray>Создан: <white><date>"
+        - ""
+        - "<yellow>ЛКМ</yellow> <gray>— надеть"
+        - "<red>Shift+ПКМ</red> <gray>— удалить навсегда"
+    active-title:
+      material: ENCHANTED_BOOK
+      name: "<title>"
+      lore:
+        - "<green>✔ Надет сейчас"
+        - "<gray>Создан: <white><date>"
+        - ""
+        - "<yellow>ЛКМ</yellow> <gray>— снять"
+        - "<red>Shift+ПКМ</red> <gray>— удалить навсегда"
+    pending-title:
+      material: CLOCK
+      name: "<title>"
+      lore:
+        - "<gold>⌛ На проверке у администрации"
+        - "<gray>Отправлен: <white><date>"
+        - ""
+        - "<yellow>ПКМ</yellow> <gray>— отозвать заявку"
+        - "<dark_gray>(токен вернётся)"
+    empty:
+      slot: 22
+      material: GRAY_DYE
+      name: "<gray>Здесь пока пусто"
+      lore:
+        - "<gray>Создай свой первый титул!"
+    info:
+      slot: 4
+      material: BOOK
+      name: "<gold><bold>Мои титулы"
+      lore:
+        - "<gray>Слотов занято: <white><slots_used>/<slots_max>"
+        - "<gray>Токенов: <yellow><tokens>"
+    previous:
+      slot: 45
+      material: ARROW
+      name: "<gray>← Предыдущая страница"
+    next:
+      slot: 53
+      material: ARROW
+      name: "<gray>Следующая страница →"
+    back:
+      slot: 48
+      material: DARK_OAK_DOOR
+      name: "<gray>Назад"
+    create:
+      slot: 50
+      material: ANVIL
+      name: "<green>Создать титул"
+
+# ---------------------------------------------------------------------
+#  Проверка заявок (администрация)
+#  Плейсхолдеры: <count> <page> <pages>
+#  У заявок: <title> <suffix> <raw> <player> <id> <strikes> <refund> <date>
+# ---------------------------------------------------------------------
+review:
+  title: "<dark_gray>Проверка титулов (<page>/<pages>)"
+  size: 54
+  content-slots: "10-16, 19-25, 28-34"
+  filler:
+    material: BLACK_STAINED_GLASS_PANE
+    name: " "
+  items:
+    request:
+      # PLAYER_HEAD автоматически получает голову игрока
+      material: PLAYER_HEAD
+      name: "<title>"
+      lore:
+        - "<gray>Игрок: <white><player>"
+        - "<gray>В чате: <white><player><suffix>"
+        - "<gray>Код: <dark_gray><raw>"
+        - "<gray>Отправлен: <white><date>"
+        - ""
+        - "<gray>Отказов у игрока: <white><strikes>"
+        - "<gray>Токен при отказе: <refund>"
+        - ""
+        - "<green>ЛКМ</green> <gray>— одобрить"
+        - "<red>ПКМ</red> <gray>— отклонить"
+    empty:
+      slot: 22
+      material: LIME_DYE
+      name: "<green>Заявок нет"
+      lore:
+        - "<gray>Все титулы проверены!"
+    info:
+      slot: 4
+      material: COMPARATOR
+      name: "<light_purple><bold>Заявок: <count>"
+      lore:
+        - "<gray>Сначала самые старые."
+    previous:
+      slot: 45
+      material: ARROW
+      name: "<gray>← Предыдущая страница"
+    next:
+      slot: 53
+      material: ARROW
+      name: "<gray>Следующая страница →"
+    back:
+      slot: 48
+      material: DARK_OAK_DOOR
+      name: "<gray>Назад"
+    refresh:
+      slot: 50
+      material: SUNFLOWER
+      name: "<yellow>Обновить"
+
+# ---------------------------------------------------------------------
+#  Выбор причины отказа
+#  Плейсхолдеры: <title> <player> <refund>, у причин ещё <reason>
+# ---------------------------------------------------------------------
+reject:
+  title: "<dark_gray>Отказ: <player>"
+  size: 36
+  content-slots: "10-16, 19-25"
+  filler:
+    material: BLACK_STAINED_GLASS_PANE
+    name: " "
+  items:
+    info:
+      slot: 4
+      material: NAME_TAG
+      name: "<title>"
+      lore:
+        - "<gray>Игрок: <white><player>"
+        - "<gray>Токен при отказе: <refund>"
+    reason:
+      material: PAPER
+      name: "<red><reason>"
+      lore:
+        - "<gray>Токен: <refund>"
+        - ""
+        - "<yellow>Нажми, чтобы отклонить"
+    custom:
+      slot: 31
+      material: WRITABLE_BOOK
+      name: "<gold>Своя причина"
+      lore:
+        - "<gray>Написать причину в чат."
+    back:
+      slot: 27
+      material: ARROW
+      name: "<gray>Назад"
+
+# ---------------------------------------------------------------------
+#  Титулы игрока (/titles admin player <ник>)
+#  Плейсхолдеры: <player> <tokens> <strikes> <count> <page> <pages>
+#  У титулов: <title> <raw> <id> <admin> <date>
+# ---------------------------------------------------------------------
+player-titles:
+  title: "<dark_gray>Титулы <player> (<page>/<pages>)"
+  size: 54
+  content-slots: "10-16, 19-25, 28-34"
+  filler:
+    material: BLACK_STAINED_GLASS_PANE
+    name: " "
+  items:
+    title:
+      material: NAME_TAG
+      name: "<title>"
+      lore:
+        - "<gray>Код: <dark_gray><raw>"
+        - "<gray>Создан: <white><date>"
+        - "<gray>Одобрил: <white><admin>"
+        - ""
+        - "<red>Shift+ПКМ</red> <gray>— снять титул"
+    active-title:
+      material: ENCHANTED_BOOK
+      name: "<title>"
+      lore:
+        - "<green>✔ Надет у игрока"
+        - "<gray>Код: <dark_gray><raw>"
+        - "<gray>Создан: <white><date>"
+        - "<gray>Одобрил: <white><admin>"
+        - ""
+        - "<red>Shift+ПКМ</red> <gray>— снять титул"
+    info:
+      slot: 4
+      material: PLAYER_HEAD
+      name: "<white><bold><player>"
+      lore:
+        - "<gray>Титулов: <white><count>"
+        - "<gray>Токенов: <yellow><tokens>"
+        - "<gray>Отказов: <red><strikes>"
+    empty:
+      slot: 22
+      material: GRAY_DYE
+      name: "<gray>У игрока нет титулов"
+    previous:
+      slot: 45
+      material: ARROW
+      name: "<gray>← Предыдущая страница"
+    next:
+      slot: 53
+      material: ARROW
+      name: "<gray>Следующая страница →"
+    back:
+      slot: 49
+      material: DARK_OAK_DOOR
+      name: "<gray>К заявкам"
