@@ -175,6 +175,14 @@ storage:
         - ""
         - "<yellow>ЛКМ</yellow> <gray>— снять"
         - "<red>Shift+ПКМ</red> <gray>— удалить навсегда"
+    confirm-delete:
+      material: RED_DYE
+      name: "<title>"
+      lore:
+        - "<red><bold>Удалить этот титул навсегда?"
+        - "<gray>Токен не вернётся."
+        - ""
+        - "<red>Shift+ПКМ ещё раз</red> <gray>— подтвердить"
     pending-title:
       material: CLOCK
       name: "<title>"
@@ -340,6 +348,14 @@ player-titles:
         - "<gray>Одобрил: <white><admin>"
         - ""
         - "<red>Shift+ПКМ</red> <gray>— снять титул"
+    confirm-revoke:
+      material: RED_DYE
+      name: "<title>"
+      lore:
+        - "<red><bold>Снять этот титул у игрока?"
+        - "<gray>Причина: из rejections.revoke-reason"
+        - ""
+        - "<red>Shift+ПКМ ещё раз</red> <gray>— подтвердить"
     info:
       slot: 4
       material: PLAYER_HEAD

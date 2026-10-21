@@ -19,6 +19,8 @@ public final class StorageMenu extends PagedMenu {
 
     private final TitleService.Snapshot data;
     private final int slotLimit;
+    /** Титул, ожидающий подтверждения удаления (второй Shift+ПКМ). */
+    private Integer confirmDelete;
 
     private StorageMenu(FoolioTitles plugin, Player viewer, TitleService.Snapshot data, int page) {
         super(plugin, viewer, "storage", page);
@@ -63,19 +65,29 @@ public final class StorageMenu extends PagedMenu {
             if (t.status() == TitleStatus.PENDING) {
                 MenuConfig.ItemTemplate tpl = cfg().item(id, "pending-title");
                 set(slot, tpl.build(r), type -> {
-                    if (type == ClickType.RIGHT || type == ClickType.SHIFT_RIGHT) {
-                        close();
+                    if ((type == ClickType.RIGHT || type == ClickType.SHIFT_RIGHT) && lock()) {
                         plugin.service().cancel(viewer, t.id(), this::reopen);
                     }
                 });
                 return;
             }
             boolean active = Objects.equals(data.player().activeTitle(), t.id());
-            MenuConfig.ItemTemplate tpl = cfg().item(id, active ? "active-title" : "title");
+            boolean confirming = Objects.equals(confirmDelete, t.id());
+            MenuConfig.ItemTemplate tpl = cfg().item(id, confirming ? "confirm-delete"
+                    : active ? "active-title" : "title");
             set(slot, tpl.build(r), type -> {
                 if (type == ClickType.SHIFT_RIGHT) {
-                    plugin.service().deleteOwn(viewer, t.id(), this::reopen);
+                    if (!confirming) {
+                        confirmDelete = t.id();
+                        click();
+                        rerender();
+                    } else if (lock()) {
+                        plugin.service().deleteOwn(viewer, t.id(), this::reopen);
+                    }
                 } else if (type == ClickType.LEFT || type == ClickType.SHIFT_LEFT) {
+                    if (!lock()) {
+                        return;
+                    }
                     if (active) {
                         plugin.service().unequip(viewer, this::reopen);
                     } else {

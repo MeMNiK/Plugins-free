@@ -46,6 +46,8 @@ public final class TitleService {
     private final Database database;
     private final ExecutorService dbThread;
     private final Executor mainThread;
+    /** Время последней отправки заявки игроком (защита от спама заявками/уведомлениями). */
+    private final java.util.Map<UUID, Long> lastSubmit = new java.util.concurrent.ConcurrentHashMap<>();
 
     public TitleService(FoolioTitles plugin, Database database) {
         this.plugin = plugin;
@@ -146,6 +148,25 @@ public final class TitleService {
             }
         }
         return limit;
+    }
+
+    /** Сколько секунд игроку ждать до следующей заявки (0 — можно отправлять). */
+    public long submitCooldownLeft(Player player) {
+        long cooldown = Math.max(0, plugin.getConfig().getInt("limits.submit-cooldown-seconds", 30)) * 1000L;
+        Long last = lastSubmit.get(player.getUniqueId());
+        if (last == null || cooldown == 0) {
+            return 0;
+        }
+        long left = last + cooldown - System.currentTimeMillis();
+        return left <= 0 ? 0 : (left + 999) / 1000;
+    }
+
+    private boolean checkAdmin(CommandSender sender) {
+        if (sender.hasPermission(PERM_ADMIN)) {
+            return true;
+        }
+        lang().send(sender, "error.no-permission");
+        return false;
     }
 
     public int maxPending() {
@@ -272,11 +293,18 @@ public final class TitleService {
     // ------------------------------------------------------------------ игрок
 
     public void submit(Player player, String raw, Runnable onDone) {
+        long wait = submitCooldownLeft(player);
+        if (wait > 0) {
+            lang().send(player, "player.cooldown", Lang.num("seconds", wait));
+            onDone.run();
+            return;
+        }
         int limit = slotLimit(player);
         int maxPending = maxPending();
         run(() -> database.submit(player.getUniqueId(), player.getName(), raw, limit, maxPending), result -> {
             switch (result) {
                 case OK -> {
+                    lastSubmit.put(player.getUniqueId(), System.currentTimeMillis());
                     lang().send(player, "player.submitted", Lang.comp("title", render(raw)));
                     plugin.sounds().play(player, "success");
                     if (plugin.getConfig().getBoolean("notify.admins-on-new-request", true)) {
@@ -370,6 +398,10 @@ public final class TitleService {
     // ------------------------------------------------------------------ администрация
 
     public void approve(CommandSender admin, int id, Runnable onDone) {
+        if (!checkAdmin(admin)) {
+            onDone.run();
+            return;
+        }
         boolean reset = plugin.getConfig().getBoolean("rejections.reset-strikes-on-approve", false);
         run(() -> database.approve(id, admin.getName(), reset), title -> {
             if (title == null) {
@@ -388,6 +420,10 @@ public final class TitleService {
     }
 
     public void reject(CommandSender admin, int id, String reason, Runnable onDone) {
+        if (!checkAdmin(admin)) {
+            onDone.run();
+            return;
+        }
         run(() -> database.reject(id, admin.getName(), reason, freeRejections()), result -> {
             if (result == null) {
                 lang().send(admin, "error.already-processed");
@@ -407,6 +443,10 @@ public final class TitleService {
     }
 
     public void revoke(CommandSender admin, int id, String reason, Runnable onDone) {
+        if (!checkAdmin(admin)) {
+            onDone.run();
+            return;
+        }
         run(() -> database.remove(id, null, TitleStatus.REVOKED, admin.getName(), reason), result -> {
             if (result == null) {
                 lang().send(admin, "error.already-processed");

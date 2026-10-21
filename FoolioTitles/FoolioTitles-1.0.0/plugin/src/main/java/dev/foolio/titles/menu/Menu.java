@@ -29,6 +29,8 @@ public abstract class Menu implements InventoryHolder {
     protected final String id;
     private final Map<Integer, ClickAction> actions = new HashMap<>();
     private Inventory inventory;
+    /** Меню «заблокировано», пока выполняется действие (защита от двойных кликов). */
+    private boolean locked;
 
     protected Menu(FoolioTitles plugin, Player viewer, String id) {
         this.plugin = plugin;
@@ -60,17 +62,41 @@ public abstract class Menu implements InventoryHolder {
         int size = cfg().size(id);
         inventory = Bukkit.createInventory(this, size,
                 MiniMessage.miniMessage().deserialize(cfg().title(id), titleResolver()));
-        actions.clear();
-        MenuConfig.ItemTemplate filler = cfg().filler(id);
-        if (filler != null) {
-            ItemStack fill = filler.build(TagResolver.empty());
-            for (int i = 0; i < size; i++) {
-                inventory.setItem(i, fill);
-            }
-        }
-        render();
+        fill();
         plugin.menuListener().track(viewer.getUniqueId(), this);
         viewer.openInventory(inventory);
+    }
+
+    /** Перерисовать содержимое без переоткрытия (курсор игрока не прыгает). */
+    protected void rerender() {
+        if (inventory == null) {
+            return;
+        }
+        fill();
+    }
+
+    private void fill() {
+        actions.clear();
+        locked = false;
+        int size = inventory.getSize();
+        MenuConfig.ItemTemplate filler = cfg().filler(id);
+        ItemStack fill = filler != null ? filler.build(TagResolver.empty()) : null;
+        for (int i = 0; i < size; i++) {
+            inventory.setItem(i, fill);
+        }
+        render();
+    }
+
+    /**
+     * Заблокировать меню до следующего открытия/перерисовки.
+     * @return false, если меню уже заблокировано (действие уже выполняется)
+     */
+    protected boolean lock() {
+        if (locked) {
+            return false;
+        }
+        locked = true;
+        return true;
     }
 
     protected void set(int slot, ItemStack item, ClickAction action) {
@@ -101,6 +127,9 @@ public abstract class Menu implements InventoryHolder {
     }
 
     void handleClick(int slot, ClickType type) {
+        if (locked || !viewer.isOnline()) {
+            return;
+        }
         ClickAction action = actions.get(slot);
         if (action != null) {
             action.click(type);
@@ -113,5 +142,9 @@ public abstract class Menu implements InventoryHolder {
 
     protected void close() {
         viewer.closeInventory();
+    }
+
+    public Player viewer() {
+        return viewer;
     }
 }

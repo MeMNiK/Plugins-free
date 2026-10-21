@@ -1,0 +1,1 @@
+{ "name": "foolio-titles-e2e", "private": true, "type": "module", "dependencies": { "mineflayer": "^4" } }

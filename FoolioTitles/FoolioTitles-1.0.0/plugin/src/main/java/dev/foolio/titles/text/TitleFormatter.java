@@ -37,6 +37,10 @@ public final class TitleFormatter {
             "dark_gray", "blue", "green", "aqua", "red", "light_purple", "yellow", "white"
     };
     private static final Pattern OBFUSCATED = Pattern.compile("(?i)<\\s*(obf|obfuscated)\\s*>");
+    /** Плейсхолдеры PlaceholderAPI/чат-плагинов: %player_ip%, {balance} и т.п. — их чат-плагин мог бы подставить. */
+    private static final Pattern PLACEHOLDER = Pattern.compile("%[^%\\s]+%|\\{[^{}\\s]+\\}|\\$\\{");
+    /** Остатки цветовых кодов в видимом тексте — чат-плагин превратил бы их в форматирование. */
+    private static final Pattern LEFTOVER_CODE = Pattern.compile("[&§][0-9a-fk-orxA-FK-ORX#]");
     private static final Map<Character, Character> LOOKALIKES = Map.ofEntries(
             Map.entry('a', 'а'), Map.entry('e', 'е'), Map.entry('o', 'о'), Map.entry('p', 'р'),
             Map.entry('c', 'с'), Map.entry('y', 'у'), Map.entry('x', 'х'), Map.entry('k', 'к'),
@@ -226,6 +230,12 @@ public final class TitleFormatter {
         }
         if (text.isBlank()) {
             return new Result(null, "empty");
+        }
+        if (PLACEHOLDER.matcher(text).find()) {
+            return new Result(null, "placeholder");
+        }
+        if (LEFTOVER_CODE.matcher(text).find()) {
+            return new Result(null, "bad-chars");
         }
         int visible = text.codePointCount(0, text.length());
         if (visible < minLength) {

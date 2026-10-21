@@ -14,7 +14,7 @@ import java.util.List;
 /** Админ-меню: очередь титулов на проверку. ЛКМ — одобрить, ПКМ — выбрать причину отказа. */
 public final class ReviewMenu extends PagedMenu {
 
-    private final List<Database.QueueEntry> queue;
+    private List<Database.QueueEntry> queue;
 
     private ReviewMenu(FoolioTitles plugin, Player viewer, List<Database.QueueEntry> queue, int page) {
         super(plugin, viewer, "review", page);
@@ -29,9 +29,19 @@ public final class ReviewMenu extends PagedMenu {
         plugin.service().loadQueue(queue -> new ReviewMenu(plugin, player, queue, page).open(), player);
     }
 
+    /** Обновить список заявок без переоткрытия меню. */
+    void update(List<Database.QueueEntry> newQueue) {
+        this.queue = newQueue;
+        rerender();
+    }
+
     @Override
     protected int total() {
         return queue.size();
+    }
+
+    static String shorten(String raw) {
+        return raw.length() > 60 ? raw.substring(0, 57) + "..." : raw;
     }
 
     @Override
@@ -53,7 +63,7 @@ public final class ReviewMenu extends PagedMenu {
             TagResolver r = TagResolver.resolver(common,
                     Lang.comp("title", plugin.formatter().render(t.raw())),
                     Lang.comp("suffix", plugin.formatter().suffixComponent(t.raw())),
-                    Lang.text("raw", t.raw()),
+                    Lang.text("raw", shorten(t.raw())),
                     Lang.text("player", t.ownerName()),
                     Lang.num("id", t.id()),
                     Lang.num("strikes", entry.strikes()),
@@ -62,7 +72,9 @@ public final class ReviewMenu extends PagedMenu {
             MenuConfig.ItemTemplate tpl = cfg().item(id, "request");
             set(slot, tpl.build(r, null, t.owner()), type -> {
                 if (type == ClickType.LEFT || type == ClickType.SHIFT_LEFT) {
-                    plugin.service().approve(viewer, t.id(), () -> { });
+                    if (lock()) {
+                        plugin.service().approve(viewer, t.id(), () -> plugin.service().loadQueue(this::update, viewer));
+                    }
                 } else if (type == ClickType.RIGHT || type == ClickType.SHIFT_RIGHT) {
                     click();
                     new RejectMenu(plugin, viewer, t, refund, currentPage()).open();
@@ -74,7 +86,7 @@ public final class ReviewMenu extends PagedMenu {
         pageButtons(common, p -> open(plugin, viewer, p));
         place("refresh", common, type -> {
             click();
-            open(plugin, viewer, currentPage());
+            plugin.service().loadQueue(this::update, viewer);
         });
         place("back", common, type -> {
             click();
