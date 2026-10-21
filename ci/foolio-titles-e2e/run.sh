@@ -31,6 +31,8 @@ spawn-protection=0
 view-distance=3
 simulation-distance=3
 max-players=10
+difficulty=peaceful
+spawn-monsters=false
 P
 
 mkfifo console.in
