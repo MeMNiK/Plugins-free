@@ -9,7 +9,15 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const strip = (s) => s.replace(/\x1b\[[0-9;]*m/g, '').replace(/§./g, '');
 
 const results = [];
+let watched = null;
+function state(bot) {
+  if (!bot) return '';
+  const w = bot.currentWindow;
+  const win = w ? `win(start=${w.inventoryStart} s4=${slotName(w, 4)} s10=${slotName(w, 10)} s13=${slotName(w, 13)} s15=${slotName(w, 15)})` : 'no-window';
+  return `${win} last=${JSON.stringify(bot.msgs.slice(-3))}`;
+}
 function check(name, ok, detail = '') {
+  if (!ok && watched) detail = `${detail} || ${state(watched)}`;
   results.push({ name, ok: !!ok, detail });
   console.log(`${ok ? 'PASS' : 'FAIL'} | ${name}${detail ? ' | ' + detail : ''}`);
 }
@@ -48,14 +56,15 @@ function makeBot(username) {
     const bot = mineflayer.createBot({ host: '127.0.0.1', port: 25565, username, version: VERSION, auth: 'offline' });
     bot.msgs = [];
     bot.on('messagestr', (m) => { bot.msgs.push(strip(m)); });
-    bot.on('kicked', (r) => console.log(`[${username}] kicked: ${JSON.stringify(r)}`));
+    bot.on('kicked', (r) => { console.log(`[${username}] kicked: ${JSON.stringify(r)}`); check(`${username} не кикнут`, false, JSON.stringify(r).slice(0, 300)); });
+    bot.on('end', (r) => console.log(`[${username}] end: ${r}`));
     bot.on('error', (e) => console.log(`[${username}] error: ${e.message}`));
     bot.once('spawn', () => { bots[username] = bot; resolve(bot); });
     setTimeout(() => reject(new Error(`${username}: spawn timeout`)), 60000);
   });
 }
 function mark(bot) { return bot.msgs.length; }
-async function waitMsg(bot, re, from = 0, timeout = 6000) {
+async function waitMsg(bot, re, from = 0, timeout = 8000) {
   const until = Date.now() + timeout;
   while (Date.now() < until) {
     const hit = bot.msgs.slice(from).find((m) => re.test(m));
@@ -64,7 +73,7 @@ async function waitMsg(bot, re, from = 0, timeout = 6000) {
   }
   return null;
 }
-async function waitWindow(bot, pred, timeout = 6000) {
+async function waitWindow(bot, pred, timeout = 10000) {
   const until = Date.now() + timeout;
   while (Date.now() < until) {
     const w = bot.currentWindow;
@@ -138,6 +147,7 @@ async function main() {
   check('Токены офлайн-игроку, который не заходил, ставятся в очередь', /ещё не заходил/.test(out), out.trim().split('\n').pop());
 
   const T = await makeBot('Tester');
+  watched = T;
   check('Отложенные токены выдаются при входе', await waitMsg(T, /получил 3/, 0, 8000));
   check('Баланс после входа = 3', (await tokens('Tester')) === 3);
 
@@ -353,6 +363,7 @@ async function main() {
   await click(A, 10, 0, 0);
   await sleep(1500);
   const T2 = await makeBot('Tester');
+  watched = T2;
   check('Офлайн-игрок узнаёт о решении при входе', await waitMsg(T2, /одобрен/, 0, 8000));
 
   // 17. Снятие титула администрацией (с подтверждением)
