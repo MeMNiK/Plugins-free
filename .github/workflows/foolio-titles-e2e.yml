@@ -3,6 +3,8 @@ on:
   push:
     branches: ['e2e/foolio-titles']
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   e2e:
     runs-on: ubuntu-latest
@@ -24,7 +26,20 @@ jobs:
       - name: Install bots
         run: cd ci/foolio-titles-e2e && npm install --no-audit --no-fund
       - name: Run simulation
-        run: cd ci/foolio-titles-e2e && ./run.sh ${{ matrix.mc }} "$GITHUB_WORKSPACE/FoolioTitles/FoolioTitles-1.0.0/plugin/build/libs/FoolioTitles-1.0.0.jar"
+        run: cd ci/foolio-titles-e2e && ./run.sh ${{ matrix.mc }} "$GITHUB_WORKSPACE/FoolioTitles/FoolioTitles-1.0.0/plugin/build/libs/FoolioTitles-1.0.0.jar" 2>&1 | tee e2e-output.txt; exit ${PIPESTATUS[0]}
+      - name: Publish results to branch
+        if: always()
+        run: |
+          cd ci/foolio-titles-e2e
+          mkdir -p out && V=${{ matrix.mc }}
+          cp e2e-output.txt out/output-$V.txt 2>/dev/null || true
+          cp results-$V.json out/ 2>/dev/null || true
+          if [ -f server/server.log ]; then sed 's/\x1b\[[0-9;]*m//g' server/server.log | tail -400 > out/server-$V.log; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f out
+          git commit -m "E2E results $V [skip ci]" || exit 0
+          for i in 1 2 3 4 5; do git pull --rebase -q origin e2e/foolio-titles && git push -q origin HEAD:e2e/foolio-titles && break; sleep 5; done
       - if: always()
         uses: actions/upload-artifact@v4
         with:
