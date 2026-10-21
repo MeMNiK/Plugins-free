@@ -1,3 +1,4 @@
+// FoolioTitles - Development by DeJIoVoy
 package dev.foolio.titles.input;
 
 import io.papermc.paper.event.player.AsyncChatEvent;

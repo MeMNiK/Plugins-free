@@ -1,3 +1,4 @@
+// FoolioTitles - Development by DeJIoVoy
 package dev.foolio.titles;
 
 import org.bukkit.Bukkit;
@@ -63,7 +64,10 @@ public final class TitlesCommand implements TabExecutor {
 
         String sub = args[0].toLowerCase(Locale.ROOT);
         switch (sub) {
-            case "help" -> lang().send(sender, sender.hasPermission(TitleService.PERM_ADMIN) ? "help.admin" : "help.player");
+            case "help", "about", "version" -> {
+                lang().send(sender, sender.hasPermission(TitleService.PERM_ADMIN) ? "help.admin" : "help.player");
+                sendSignature(sender);
+            }
             case "admin" -> {
                 if (!admin(sender)) {
                     return true;
@@ -132,9 +136,18 @@ public final class TitlesCommand implements TabExecutor {
                 plugin.reloadAll();
                 lang().send(sender, "admin.reloaded");
             }
-            default -> lang().send(sender, sender.hasPermission(TitleService.PERM_ADMIN) ? "help.admin" : "help.player");
+            default -> {
+                lang().send(sender, sender.hasPermission(TitleService.PERM_ADMIN) ? "help.admin" : "help.player");
+                sendSignature(sender);
+            }
         }
         return true;
+    }
+
+    /** Подпись автора — как у FoolioBridge. */
+    private void sendSignature(CommandSender sender) {
+        sender.sendMessage(lang().parse("<dark_gray>FoolioTitles v" + plugin.getDescription().getVersion()
+                + " • " + FoolioTitles.SIGNATURE));
     }
 
     @Override
@@ -143,6 +156,7 @@ public final class TitlesCommand implements TabExecutor {
         boolean admin = sender.hasPermission(TitleService.PERM_ADMIN);
         if (args.length == 1) {
             options.add("help");
+            options.add("about");
             if (admin) {
                 options.addAll(List.of("admin", "token", "strikes", "reload"));
             }

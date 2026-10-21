@@ -1,3 +1,4 @@
+// FoolioTitles - Development by DeJIoVoy
 package dev.foolio.titles.menu;
 
 import net.kyori.adventure.text.Component;

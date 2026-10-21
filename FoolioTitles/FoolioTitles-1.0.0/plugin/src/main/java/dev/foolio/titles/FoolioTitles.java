@@ -1,3 +1,4 @@
+// FoolioTitles - Development by DeJIoVoy
 package dev.foolio.titles;
 
 import org.bukkit.Bukkit;
@@ -26,6 +27,9 @@ import java.util.logging.Level;
  */
 public final class FoolioTitles extends JavaPlugin implements Listener {
 
+    public static final String AUTHOR = "DeJIoVoy";
+    public static final String SIGNATURE = "Development by " + AUTHOR;
+
     private final Lang lang = new Lang();
     private final Sounds sounds = new Sounds();
     private final MenuConfig menus = new MenuConfig();
@@ -37,6 +41,7 @@ public final class FoolioTitles extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        printBanner();
         if (Bukkit.getPluginManager().getPlugin("LuckPerms") == null) {
             getLogger().severe("LuckPerms не найден — FoolioTitles отключён.");
             Bukkit.getPluginManager().disablePlugin(this);
@@ -73,7 +78,7 @@ public final class FoolioTitles extends JavaPlugin implements Listener {
         for (Player p : Bukkit.getOnlinePlayers()) {
             service.handleJoin(p);
         }
-        getLogger().info("FoolioTitles " + getDescription().getVersion() + " включён.");
+        getLogger().info("FoolioTitles enabled. " + SIGNATURE);
     }
 
     @Override
@@ -86,6 +91,24 @@ public final class FoolioTitles extends JavaPlugin implements Listener {
         }
         if (service != null) {
             service.shutdown();
+        }
+        getLogger().info("FoolioTitles disabled. " + SIGNATURE);
+    }
+
+    private void printBanner() {
+        String v = getDescription().getVersion();
+        String[] lines = {
+                "",
+                "=========================================",
+                "  FoolioTitles v" + v,
+                "  Personal titles for tokens",
+                "  " + SIGNATURE,
+                "  Free & open source (MIT)",
+                "=========================================",
+                ""
+        };
+        for (String line : lines) {
+            getLogger().info(line);
         }
     }
 

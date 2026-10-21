@@ -1,3 +1,4 @@
+// FoolioTitles - Development by DeJIoVoy
 package dev.foolio.titles.hook;
 
 import net.luckperms.api.LuckPerms;

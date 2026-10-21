@@ -29,6 +29,8 @@ main:
         - "<gray>Токенов: <yellow><tokens></yellow>"
         - "<gray>Хранилище: <white><slots_used>/<slots_max></white>"
         - "<gray>Сейчас надет: <active>"
+        - ""
+        - "<dark_gray>FoolioTitles • Development by DeJIoVoy"
     create:
       slot: 11
       material: ANVIL

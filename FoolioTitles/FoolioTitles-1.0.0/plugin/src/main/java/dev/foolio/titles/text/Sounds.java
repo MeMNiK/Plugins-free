@@ -1,3 +1,4 @@
+// FoolioTitles - Development by DeJIoVoy
 package dev.foolio.titles.text;
 
 import org.bukkit.configuration.ConfigurationSection;

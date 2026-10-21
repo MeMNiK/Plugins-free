@@ -3,7 +3,7 @@ version: '${version}'
 main: dev.foolio.titles.FoolioTitles
 api-version: '1.20'
 description: Личные титулы игроков за токены с проверкой администрацией (суффикс LuckPerms).
-authors: [MeMNiK]
+authors: [DeJIoVoy]
 website: https://github.com/MeMNiK/Plugins-free
 depend: [LuckPerms]
 
