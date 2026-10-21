@@ -26,6 +26,7 @@ jobs:
       - name: Install bots
         run: cd ci/foolio-titles-e2e && npm install --no-audit --no-fund
       - name: Run simulation
+        timeout-minutes: 15
         run: cd ci/foolio-titles-e2e && ./run.sh ${{ matrix.mc }} "$GITHUB_WORKSPACE/FoolioTitles/FoolioTitles-1.0.0/plugin/build/libs/FoolioTitles-1.0.0.jar" 2>&1 | tee e2e-output.txt; exit ${PIPESTATUS[0]}
       - name: Publish results to branch
         if: always()

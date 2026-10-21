@@ -34,7 +34,8 @@ max-players=10
 P
 
 mkfifo console.in
-sleep infinity > console.in &
+sleep infinity > console.in 2>/dev/null </dev/null &
+HOLDER=$!
 java -Xms1G -Xmx2G -Dfile.encoding=UTF-8 -jar paper.jar --nogui < console.in > server.log 2>&1 &
 SERVER=$!
 for i in $(seq 1 180); do grep -q 'Done (' server.log && break; sleep 1; done
@@ -44,7 +45,7 @@ cd "$HERE"
 set +e
 SERVER_LOG="$HERE/server/server.log" SERVER_CONSOLE="$HERE/server/console.in" PLUGIN_CONFIG="$HERE/server/plugins/FoolioTitles/config.yml" MC_VERSION="$VER" node e2e.mjs
 CODE=$?
-echo stop > server/console.in; sleep 8; kill $SERVER 2>/dev/null
+echo stop > server/console.in; sleep 8; kill $SERVER $HOLDER 2>/dev/null; wait 2>/dev/null
 echo "----- FoolioTitles / ошибки в логе сервера -----"
 grep -nE "FoolioTitles|dev\.foolio|Exception|ERROR" server/server.log | grep -v "Done (" | head -80
 exit $CODE
