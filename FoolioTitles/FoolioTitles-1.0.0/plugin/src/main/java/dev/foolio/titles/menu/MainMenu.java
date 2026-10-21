@@ -61,7 +61,11 @@ public final class MainMenu extends Menu {
             StorageMenu.open(plugin, viewer, 0);
         });
         if (active != null) {
-            place("unequip", r, type -> plugin.service().unequip(viewer, () -> open(plugin, viewer)));
+            place("unequip", r, type -> {
+                if (lock()) {
+                    plugin.service().unequip(viewer, ifStillHere(() -> open(plugin, viewer)));
+                }
+            });
         }
         if (viewer.hasPermission(TitleService.PERM_ADMIN)) {
             place("admin", r, type -> {

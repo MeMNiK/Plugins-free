@@ -56,8 +56,17 @@ public final class CreateMenu extends Menu {
                     plugin.sounds().play(viewer, "error");
                     return;
                 }
+                long wait = plugin.service().submitCooldownLeft(viewer);
+                if (wait > 0) {
+                    plugin.lang().send(viewer, "player.cooldown", Lang.num("seconds", wait));
+                    plugin.sounds().play(viewer, "error");
+                    return;
+                }
+                if (!lock()) {
+                    return;
+                }
                 close();
-                plugin.service().submit(viewer, draft, () -> StorageMenu.open(plugin, viewer, 0));
+                plugin.service().submit(viewer, draft, ifStillHere(() -> StorageMenu.open(plugin, viewer, 0)));
             });
             place("retry", r, type -> startInput());
         }

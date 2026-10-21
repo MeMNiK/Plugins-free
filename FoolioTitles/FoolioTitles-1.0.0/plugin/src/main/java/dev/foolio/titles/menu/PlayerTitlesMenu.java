@@ -15,6 +15,8 @@ public final class PlayerTitlesMenu extends PagedMenu {
 
     private final TitleService.Target target;
     private final TitleService.Snapshot data;
+    /** Титул, ожидающий подтверждения снятия (второй Shift+ПКМ). */
+    private Integer confirmRevoke;
 
     private PlayerTitlesMenu(FoolioTitles plugin, Player viewer, TitleService.Target target,
                              TitleService.Snapshot data, int page) {
@@ -56,15 +58,26 @@ public final class PlayerTitlesMenu extends PagedMenu {
             boolean active = Objects.equals(data.player().activeTitle(), t.id());
             TagResolver r = TagResolver.resolver(common,
                     Lang.comp("title", plugin.formatter().render(t.raw())),
-                    Lang.text("raw", t.raw()),
+                    Lang.text("raw", ReviewMenu.shorten(t.raw())),
                     Lang.num("id", t.id()),
                     Lang.text("admin", t.reviewedBy() == null ? "-" : t.reviewedBy()),
                     Lang.text("date", plugin.lang().date(t.createdAt())));
-            MenuConfig.ItemTemplate tpl = cfg().item(id, active ? "active-title" : "title");
+            boolean confirming = Objects.equals(confirmRevoke, t.id());
+            MenuConfig.ItemTemplate tpl = cfg().item(id, confirming ? "confirm-revoke"
+                    : active ? "active-title" : "title");
             set(slot, tpl.build(r), type -> {
-                if (type == ClickType.SHIFT_RIGHT) {
+                if (type != ClickType.SHIFT_RIGHT) {
+                    return;
+                }
+                if (!confirming) {
+                    confirmRevoke = t.id();
+                    click();
+                    rerender();
+                    return;
+                }
+                if (lock()) {
                     plugin.service().revoke(viewer, t.id(), reason,
-                            () -> open(plugin, viewer, target, currentPage()));
+                            ifStillHere(() -> open(plugin, viewer, target, currentPage())));
                 }
             });
         });

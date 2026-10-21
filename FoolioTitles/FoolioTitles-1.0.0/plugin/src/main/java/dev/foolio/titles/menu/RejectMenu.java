@@ -64,6 +64,9 @@ public final class RejectMenu extends Menu {
     }
 
     private void reject(String reason) {
-        plugin.service().reject(viewer, title.id(), reason, () -> ReviewMenu.open(plugin, viewer, returnPage));
+        if (!lock()) {
+            return;
+        }
+        plugin.service().reject(viewer, title.id(), reason, ifStillHere(() -> ReviewMenu.open(plugin, viewer, returnPage)));
     }
 }

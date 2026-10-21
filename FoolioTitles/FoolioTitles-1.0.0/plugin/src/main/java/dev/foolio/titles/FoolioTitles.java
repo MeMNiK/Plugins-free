@@ -97,7 +97,7 @@ public final class FoolioTitles extends JavaPlugin implements Listener {
             saveResource("menus.yml", false);
         }
         YamlConfiguration menusYaml = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "menus.yml"));
-        menus.load(menusYaml, getLogger());
+        menus.load(menusYaml, getLogger(), getConfig().getBoolean("player-heads", true));
         lang.load(getConfig().getConfigurationSection("messages"), getConfig().getString("date-format"));
         sounds.load(getConfig().getConfigurationSection("sounds"));
         formatter.load(getConfig().getConfigurationSection("title"), getConfig().getConfigurationSection("luckperms"),

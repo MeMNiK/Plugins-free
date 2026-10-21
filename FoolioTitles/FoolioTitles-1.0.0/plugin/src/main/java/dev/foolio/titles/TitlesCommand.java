@@ -25,6 +25,9 @@ import java.util.Locale;
  */
 public final class TitlesCommand implements TabExecutor {
 
+    /** Верхняя граница для одной операции с токенами (защита от опечаток и переполнения). */
+    private static final int MAX_TOKENS = 1_000_000;
+
     private final FoolioTitles plugin;
 
     public TitlesCommand(FoolioTitles plugin) {
@@ -105,7 +108,7 @@ public final class TitlesCommand implements TabExecutor {
                     } catch (NumberFormatException e) {
                         amount = -1;
                     }
-                    if (amount < 0 || (amount == 0 && !action.equals("set"))) {
+                    if (amount < 0 || amount > MAX_TOKENS || (amount == 0 && !action.equals("set"))) {
                         lang().send(sender, "error.bad-number", Lang.text("value", args[3]));
                         return true;
                     }
