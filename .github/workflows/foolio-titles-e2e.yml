@@ -37,6 +37,8 @@ jobs:
           V=${{ matrix.mc }}
           if [ -f server/server.log ]; then sed 's/\x1b\[[0-9;]*m//g' server/server.log | tail -500 > server-$V.log; fi
           grep -E "ИТОГО" e2e-output.txt | sed 's/^/::notice::/' || true
+          grep -E "^FAIL: " e2e-output.txt | head -10 | cut -c1-900 | sed 's/^/::warning::/' || true
+          grep -E "dev\.foolio|\[FoolioTitles\].*(ERROR|WARN|Exception)|Exception" server-$V.log 2>/dev/null | head -8 | cut -c1-900 | sed 's/^/::error::/' || true
           for f in e2e-output.txt results-$V.json server-$V.log; do
             [ -f "$f" ] || continue
             name="$f"; [ "$f" = e2e-output.txt ] && name="output-$V.txt"
